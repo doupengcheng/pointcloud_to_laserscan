@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+ 
+<launch>
+    <include file="$(find rplidar_ros)/launch/rplidar_s2.launch" />
+    <include file="$(find scan_to_pointcloud2)/launch/Addpointcloud2.launch" />
+    <arg name="camera" default="camera" />
+ 
+    <!-- start sensor-->
+    <!-- <include file="$(find rplidar_ros)/launch/rplidar_s2.launch">
+        <arg name="camera" default="$(arg camera)"/>
+    </include> 
+  -->
+    <!-- run pointcloud_to_laserscan node -->
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+ 
+        <remap from="cloud_in" to="/Addlaser"/>   <!--重新映射到你前面将两个雷达点云融合后发布的点云话题-->
+        <!--<remap from="scan" to="$(arg camera)/scan"/>-->
+        <rosparam>
+            target_frame: front_laser_Link # Leave disabled to output scan in pointcloud frame   <!--你希望将转化后的雷达数据由哪个连杆发布-->
+            transform_tolerance: 0.01
+            min_height: 0.0
+            max_height: 1.0
+ 
+            angle_min: -1.507 # -M_PI
+            angle_max: 1.507 # M_PI
+            angle_increment: 0.0174533 # M_PI/360.0
+            scan_time: 0.3333
+            range_min: 0.0
+            range_max: 10.0
+            use_inf: true
+ 
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 1
+        </rosparam>
+ 
+    </node>
+ 
+</launch>
